@@ -1,0 +1,212 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Train Timetable</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            color: #2c3e50;
+        }
+
+        h1 {
+            font-size: 38px;
+            text-align: center;
+            color: #006064;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #b0bec5;
+            width: 220px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #26c6da;
+            box-shadow: 0 0 6px rgba(38, 198, 218, 0.4);
+        }
+
+        button {
+            padding: 12px 26px;
+            background-color: #00acc1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #00838f;
+        }
+
+        h2 {
+            text-align: center;
+            color: #004d40;
+            margin-top: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0097a7;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f8f9;
+        }
+
+        tr:hover {
+            background-color: #e0f2f1;
+        }
+
+        td[data-label] {
+            text-align: left;
+        }
+
+        .extra-info {
+            display: none;
+            background-color: #f1f8f9;
+        }
+
+        .expandable-row:hover {
+            cursor: pointer;
+            background-color: #e0f2f1;
+        }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                background: white;
+                padding: 12px;
+            }
+
+            td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+                border: none;
+                border-bottom: 1px solid #eee;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                font-weight: bold;
+                text-align: left;
+                color: #00796b;
+            }
+        }
+    </style>
+    <script>
+        function toggleDetails(event) {
+            const row = event.target.closest("tr");
+            const extraInfoRow = row.nextElementSibling;
+            if (extraInfoRow.style.display === "table-row") {
+                extraInfoRow.style.display = "none";
+            } else {
+                extraInfoRow.style.display = "table-row";
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <h1>🚆 Train Route Search</h1>
+
+    <form method="get">
+        <input type="text" name="start" placeholder="Start Station" required>
+        <input type="text" name="destination" placeholder="Destination Station" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Available Trains</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Train Number</th>
+                <th>Type</th>
+                <th>Arrival Time</th>
+                <th>Start Point</th>
+                <th>Destination</th>
+                <th>Days of Service</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for train in trains %}
+            <tr class="expandable-row" onclick="toggleDetails(event)">
+                <td data-label="Train Number">{{ train.number }}</td>
+                <td data-label="Type">{{ train.train_type }}</td>
+                <td data-label="Arrival">{{ train.arrival_time }}</td>
+                <td data-label="Start Point">{{ train.start_point }}</td>
+                <td data-label="Destination">{{ train.destination_point }}</td>
+                <td data-label="Days of Service">{{ train.days_of_service }}</td>
+            </tr>
+
+            <tr class="extra-info">
+                <td colspan="6">
+                    <strong>Departure Time:</strong> {{ train.departure_time }}<br>
+                    <strong>Reaching Time:</strong> {{ train.reaching_time }}<br>
+                    <strong>Via:</strong> 
+                    {% with train.via|split:"," as via_list %}
+                        {% for stop in via_list %}
+                            {{ stop|trim }}{% if not forloop.last %}{% if forloop.counter|divisibleby:3 %}<br>{% else %}, {% endif %}{% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">No trains found for this route.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

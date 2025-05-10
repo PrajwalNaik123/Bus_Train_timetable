@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transport Timetable</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #ffffff);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 60px;
+            font-size: 42px;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 220px;
+        }
+
+        .option:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .option a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .emoji {
+            font-size: 50px;
+            transition: transform 0.2s;
+        }
+
+        .emoji:hover {
+            transform: scale(1.2);
+        }
+
+        .label {
+            margin-top: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        @media (max-width: 600px) {
+            .options {
+                flex-direction: column;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Transport Timetable</h1>
+
+    <div class="options">
+        <div class="option">
+            <a href="/search-bus/">
+                <div class="emoji">🚌</div>
+                <div class="label">Bus Timetable</div>
+            </a>
+        </div>
+
+        <div class="option">
+            <a href="/search-train/">
+                <div class="emoji">🚆</div>
+                <div class="label">Train Timetable</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
