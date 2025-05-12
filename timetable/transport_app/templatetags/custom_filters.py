@@ -21,3 +21,5 @@ def trim(value):
     if isinstance(value, str):
         return value.strip()
     return ''
+def zip(a, b):
+    return zip(a, b)

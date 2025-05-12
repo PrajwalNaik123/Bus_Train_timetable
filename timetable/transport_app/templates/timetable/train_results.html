@@ -192,12 +192,10 @@
                 <td colspan="6">
                     <strong>Departure Time:</strong> {{ train.departure_time }}<br>
                     <strong>Reaching Time:</strong> {{ train.reaching_time }}<br>
-                    <strong>Via:</strong> 
-                    {% with train.via|split:"," as via_list %}
-                        {% for stop in via_list %}
-                            {{ stop|trim }}{% if not forloop.last %}{% if forloop.counter|divisibleby:3 %}<br>{% else %}, {% endif %}{% endif %}
-                        {% endfor %}
-                    {% endwith %}
+                    <strong>Via Stops & Times:</strong><br>
+                    {% for stop, time in train.via_with_times %}
+                        • {{ stop }} <span style="color: gray;">({{ time }})</span><br>
+                    {% endfor %}
                 </td>
             </tr>
         {% empty %}

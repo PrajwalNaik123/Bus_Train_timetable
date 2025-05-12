@@ -40,7 +40,24 @@ def filter_routes(model, start, destination):
             Q(start_point__icontains=destination) | Q(via__icontains=destination) | Q(destination_point__icontains=destination)
         )
     return model.objects.all()
+def parse_via_with_times(via, via_times):
+    via_list = [v.strip() for v in via.split(',')]
+    time_list = [t.strip() for t in via_times.split(',')]
+    return list(zip(via_list, time_list))
+from .models import Bus
 
+def bus_results(request):
+    buses = Bus.objects.all()
+    for bus in buses:
+        bus.via_with_times = zip(bus.via.split(','), bus.via_times.split(','))
+    return render(request, 'bus_results.html', {'buses': buses})
+from .models import Train
+
+def train_results(request):
+    trains = Train.objects.all()
+    for train in trains:
+        train.via_with_times = zip(train.via.split(','), train.via_times.split(','))
+    return render(request, 'train_results.html', {'trains': trains})
 
 def search_buses(request):
     start = request.GET.get('start', '')
@@ -48,9 +65,13 @@ def search_buses(request):
     buses = filter_routes(Bus, start, destination)
 
     for bus in buses:
-        bus.via_list = [v.strip() for v in bus.via.split(',')]
-    
+        bus.via_with_times = zip(
+            [v.strip() for v in bus.via.split(',')],
+            [t.strip() for t in bus.via_times.split(',')]
+        )
+
     return render(request, 'timetable/bus_results.html', {'buses': buses})
+
 
 def search_trains(request):
     start = request.GET.get('start', '')
@@ -58,6 +79,10 @@ def search_trains(request):
     trains = filter_routes(Train, start, destination)
 
     for train in trains:
-        train.via_list = [v.strip() for v in train.via.split(',')]
-    
+        train.via_with_times = zip(
+            [v.strip() for v in train.via.split(',')],
+            [t.strip() for t in train.via_times.split(',')]
+        )
+
     return render(request, 'timetable/train_results.html', {'trains': trains})
+

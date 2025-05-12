@@ -82,10 +82,6 @@
             background-color: #e0f2f1;
         }
 
-        .via-text {
-            white-space: pre-line;
-        }
-
         .extra-info {
             display: none;
             background-color: #f1f8f9;
@@ -93,7 +89,6 @@
 
         .expandable-row:hover {
             cursor: pointer;
-            background-color: #e0f2f1;
         }
 
         @media (max-width: 768px) {
@@ -130,15 +125,19 @@
         }
     </style>
     <script>
-        function toggleDetails(event) {
-            const row = event.target.closest("tr");
-            const extraInfoRow = row.nextElementSibling;
-            if (extraInfoRow.style.display === "table-row") {
-                extraInfoRow.style.display = "none";
-            } else {
-                extraInfoRow.style.display = "table-row";
-            }
-        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const rows = document.querySelectorAll(".expandable-row");
+            rows.forEach(row => {
+                row.addEventListener("click", function() {
+                    const nextRow = row.nextElementSibling;
+                    if (nextRow.style.display === "table-row") {
+                        nextRow.style.display = "none";
+                    } else {
+                        nextRow.style.display = "table-row";
+                    }
+                });
+            });
+        });
     </script>
 </head>
 <body>
@@ -174,24 +173,22 @@
         </thead>
         <tbody>
         {% for bus in buses %}
-            <tr class="expandable-row" onclick="toggleDetails(event)">
-                <td>{{ bus.number }}</td>
-                <td>{{ bus.bus_type }}</td>
-                <td>{{ bus.arrival_time }}</td>
-                <td>{{ bus.start_point }}</td>
-                <td>{{ bus.destination_point }}</td>
+            <tr class="expandable-row">
+                <td data-label="Bus Number">{{ bus.number }}</td>
+                <td data-label="Type">{{ bus.bus_type }}</td>
+                <td data-label="Arrival Time">{{ bus.arrival_time }}</td>
+                <td data-label="Start">{{ bus.start_point }}</td>
+                <td data-label="Destination">{{ bus.destination_point }}</td>
             </tr>
 
             <tr class="extra-info">
                 <td colspan="5">
                     <strong>Departure Time:</strong> {{ bus.departure_time }}<br>
                     <strong>Reaching Time:</strong> {{ bus.reaching_time }}<br>
-                    <strong>Via:</strong> 
-                    {% with bus.via|split:"," as via_list %}
-                        {% for stop in via_list %}
-                            {{ stop|trim }}{% if not forloop.last %}{% if forloop.counter|divisibleby:3 %}<br>{% else %}, {% endif %}{% endif %}
-                        {% endfor %}
-                    {% endwith %}
+                    <strong>Via Stops & Times:</strong><br>
+                    {% for stop, time in bus.via_with_times %}
+                        • {{ stop|trim }} <span style="color: gray;">({{ time|trim }})</span><br>
+                    {% endfor %}
                 </td>
             </tr>
         {% empty %}
